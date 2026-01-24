@@ -29,13 +29,12 @@ public class Cabin {
        return student;
     }
     public void studentArrives(String name, String id) {
-        System.out.println("Student Arrives cabin " + cabinPos + ", ");
+        System.out.println("\n--> Student [" + name + "] Arrives at cabin " + cabinPos + "\n");
         student = new Student(name, id);
         toggleOccupancy();
     }
     public void studentLeaves() {
-        System.out.println("Student Leaves cabin " + cabinPos + ", ");
-        student.info();
+        System.out.println("\n<--Student [" + student.getName() + "] Leaves cabin " + cabinPos + "\n");
         student = null;
         toggleOccupancy();
     }
