@@ -1,37 +1,72 @@
 # Library Lab Logger
 
-**Current Status:** Command Line Interface (CLI) Prototype
+> ** NOTE: Experimental GUI Support**
+> This project currently defaults to a Command Line Interface (CLI). An early-stage JavaFX GUI implementation exists within `Main.java` but is commented out/inactive by default.
+>
+> To enable the GUI:
+> 1. Uncomment the `launch(args)` method call in `Main.java`.
+> 2. The GUI will launch **only after** the CLI session is terminated (by pressing Enter at the prompt).
+> 3. Use the specific Maven command listed below to run it.
 
-### The Problem
-In our university computer lab, high partition walls create a quiet environment but block visibility. Students often struggle to see which cabins are empty, forcing them to roam around and cause distractions while searching for a seat.
+### Project Overview
+The Library Lab Logger addresses the "blind search" problem in high-partition computer labs. It replaces the manual ledger system with a digital tracking engine to manage student check-ins, check-outs, and real-time cabin availability.
 
-### The Solution
-This project is a Java-based application designed to track real-time cabin occupancy. It replaces the manual ledger system with a digital "Check-in/Check-out" workflow, automatically identifying available seats and preventing double-booking.
+### Project Structure (Class Breakdown)
+The logic is encapsulated in the package `com.kishor.logger`:
 
-### Technology Stack
-* **Language:** Java 17+
-* **Build Tool:** Apache Maven
-* **Architecture:** Standard Maven Directory Layout
+* **`Main.java`**: The entry point. Handles the application lifecycle, the interactive CLI "Game Loop," and the experimental JavaFX `Application` entry.
+* **`Lab.java`**: The core logic engine. Manages the list of `Cabin` objects, tracks occupancy, handles input validation, and maintains the list of available seats.
+* **`Cabin.java`**: Represents a physical workspace. Stores state (`isOccupied`) and the current `Student` object.
+* **`Student.java`**: Data model representing a user (Name and ID).
+* **`CabinType.java`**: Enum defining cabin amenities (e.g., `WITH_COMPUTER`, `WITHOUT_COMPUTER`).
+* **`LabMode.java`**: Enum defining lab structure (e.g., `STANDARD`, `SPECIAL`).
 
-### Project Structure
-The source code follows the below mentioned package structure:
-`src/main/java/com/kishor/logger/`
+---
 
-### How to Run
-This project uses Maven for compilation and execution. You do not need to manually compile classes.
+### Installation & Setup
 
-1.  **Prerequisite:** Ensure **Maven** (`mvn`) and the **Java JDK** are installed.
-2.  **Navigate** to the project root directory (where `pom.xml` is located).
-3.  **Run the application** using the following command:
+This project uses **Apache Maven** for dependency management. You do **not** need to manually download JAR files (like JavaFX); Maven handles this automatically.
+
+**Prerequisites:**
+* Java JDK 17+
+* Apache Maven
+
+1. **Install Maven (Arch Linux):**
 
 ```bash
-mvn clean compile exec:java -Dexec.mainClass="com.kishor.logger.Main"
+sudo pacman -S maven
 ```
 
-### Usage Guide
+2. **Install Dependencies & Build:**
+Run this command in the project root (where pom.xml is located) to download required libraries and compile the code:
 
-1. Check-In: Enter a Name and ID. If the ID is new, the system will ask for a Cabin Number from the list of available seats.
+```Bash
+mvn clean compile
+```
 
-2. Check-Out: Enter the Name and ID of a student currently inside. The system will auto-detect the ID and process the exit.
+### How to Run
+**Option 1: CLI Mode (Standard)**
 
-3. Exit: Submit an empty string at the Name prompt to close the application.
+To run the text-based logger interface:
+
+```bash
+mvn exec:java -Dexec.mainClass="com.kishor.logger.Main"
+```
+
+**Usage:**
+
+1. Check-In: Enter Name and ID. Select a cabin from the available list.
+
+2. Check-Out: Enter the Name and ID of a current student.
+
+3. Exit: Press Enter (empty input) at the ID prompt to close the loop.
+
+**Option 2: GUI Mode (Experimental)**
+
+If you have uncommented the launch(args) line in Main.java, use this command to ensure JavaFX libraries are loaded correctly:
+
+```bash
+mvn clean javafx:run
+```
+
+**Note:** As per current logic, the CLI loop runs first. The GUI window will open only after you exit the CLI loop.

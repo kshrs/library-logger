@@ -1,8 +1,14 @@
 package com.kishor.logger;
+
 import java.util.Scanner;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 // Main class
-public class Main {
+public class Main extends Application {
 
     // Number of Cabins in the lab
     private static int cabinCount = 10;
@@ -39,6 +45,22 @@ public class Main {
         scanner.close();
     }
 
+    // NOTE: This is testing version where the gui starts up after the cli version
+    // JavaFX Testing
+    @Override
+        public void start(Stage stage) {
+            String javaVersion = System.getProperty("java.version");
+            String javaFXVersion = System.getProperty("javafx.version");
+
+            Label l = new Label("Hello, JavaFX " + javaFXVersion + " running on java " + javaVersion + " and it's great.");
+            Scene scene = new Scene(new StackPane(l), 640, 480);
+
+            stage.setScene(scene);
+            stage.setTitle("JavaFX example");
+            stage.show();
+        }
+
+
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -46,5 +68,6 @@ public class Main {
         Lab lab = new Lab(cabinCount, sc);
         mainLoop(lab, sc);
         sc.close();
+        // launch(args);
     }
 }
