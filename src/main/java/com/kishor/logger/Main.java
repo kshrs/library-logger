@@ -1,4 +1,4 @@
-import logger.Lab;
+package com.kishor.logger;
 import java.util.Scanner;
 
 // Main class
@@ -18,7 +18,7 @@ public class Main {
 
             lab.showAvailableCabins();
 
-            // NOTE: To exit the app purposefully, Input '\n' (aka a blank line (or) press enter key) on input of the name
+            // NOTE: To exit the app purposefully, Input '\n' (aka a blank line (or) press enter key) on input of the id
             System.out.print("Enter the Name: ");
             name = scanner.nextLine();
             System.out.print("Enter the ID: ");

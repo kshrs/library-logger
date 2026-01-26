@@ -1,4 +1,4 @@
-package logger;
+package com.kishor.logger;
 
 // CabinType enum class
 public enum CabinType {

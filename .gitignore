@@ -1,0 +1,18 @@
+# Maven
+target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Editors
+.vscode/
+.zed/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Java / JavaFX artifacts
+*.jmod

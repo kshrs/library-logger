@@ -1,4 +1,4 @@
-package logger;
+package com.kishor.logger;
 
 // Student class
 public class Student {

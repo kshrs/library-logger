@@ -1,4 +1,4 @@
-package logger;
+package com.kishor.logger;
 
 // LabMode enum class
 public enum LabMode {

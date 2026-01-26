@@ -1,4 +1,4 @@
-package logger;
+package com.kishor.logger;
 
 // Cabin class
 public class Cabin {
