@@ -1,12 +1,14 @@
 package logger;
 
+// Cabin class
 public class Cabin {
     private CabinType cabinType;
     private boolean isOccupied;
     private int cabinPos;
+
     private Student student;
 
-    // Constructor
+    // Constructor to initialize the object with cabin type and cabin position
     public Cabin(CabinType cabinType, int cabinPos) {
         isOccupied = false;
         this.cabinType = cabinType;
@@ -15,10 +17,12 @@ public class Cabin {
     }
 
 
-    // Getters and Setters for Occupancy
+    // Setters
     public void toggleOccupancy() {
         isOccupied = !isOccupied;
     }
+
+    // Getters
     public boolean getOccupancy() {
         return isOccupied;
     }
@@ -28,11 +32,15 @@ public class Cabin {
     public Student getStudent() {
        return student;
     }
+
+    // Method for Student entry
     public void studentArrives(String name, String id) {
         System.out.println("\n--> Student [" + name + "] Arrives at cabin " + cabinPos + "\n");
         student = new Student(name, id);
         toggleOccupancy();
     }
+
+    // Method for Student exit
     public void studentLeaves() {
         System.out.println("\n<--Student [" + student.getName() + "] Leaves cabin " + cabinPos + "\n");
         student = null;
@@ -40,6 +48,7 @@ public class Cabin {
     }
 
     // Details of the cabin
+    // NOTE: Need to delete/modify this for GUI in the future
     public void printDetails() {
         System.out.println("Cabin Details: cabin-" + cabinPos);
         System.out.println("Cabin Type => " + cabinType);
