@@ -7,7 +7,6 @@ import java.util.Scanner;
 // Class Lab
 public class Lab {
     private int cabinCount;
-    private Scanner cabinScanner;
     private ArrayList<Cabin> cabins = new ArrayList<Cabin>();
 
     private ArrayList<String> studentsInside = new ArrayList<String>();
@@ -15,9 +14,7 @@ public class Lab {
     private ArrayList<Integer> occupiedCabins = new ArrayList<Integer>();
 
     // Constructor
-    // NOTE: scanner for user input for cabin position
-    public Lab(int cabinCount, Scanner scanner) {
-        cabinScanner = scanner;
+    public Lab(int cabinCount) {
         this.cabinCount = cabinCount;
 
         for (int i = 1; i <= cabinCount; ++i) {
@@ -44,6 +41,10 @@ public class Lab {
            }
         }
         return false;
+    }
+
+    public ArrayList<Integer> getOccupiedCabins() {
+        return occupiedCabins;
     }
 
     public void showAvailableCabins() {
@@ -93,7 +94,7 @@ public class Lab {
 
     // Method to make decision on whether a student is already inside or a new entry
     // Note: This method will be the main entry from outside the package `logger`
-    public void studentArrivesOrLeaves(String name, String id) {
+    public void studentArrivesOrLeaves(String name, String id, Scanner cabinScanner) {
         if (isStudentInside(id)) {
             studentLeaves(name, id);
         } else {
@@ -109,6 +110,18 @@ public class Lab {
             }
             if (!(isCabinOccupied(cabinPos))) {
                     studentArrives(name, id, cabinPos);
+            } else {
+                System.out.println("Cabin is already occupied. Try Again");
+            }
+        }
+    }
+    // Overloaded function for the gui version
+    public void studentArrivesOrLeaves(String name, String id, int cabinID) {
+        if (isStudentInside(id)) {
+            studentLeaves(name, id);
+        } else {
+            if (!(isCabinOccupied(cabinID))) {
+                    studentArrives(name, id, cabinID);
             } else {
                 System.out.println("Cabin is already occupied. Try Again");
             }
