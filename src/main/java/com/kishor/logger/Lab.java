@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
+
 // Class Lab
 public class Lab {
     private int cabinCount;
@@ -21,6 +22,7 @@ public class Lab {
             cabins.add(new Cabin(CabinType.WITH_COMPUTER, i));
             availableCabins.add(Integer.valueOf(i));
         }
+        LogManager.ensureFileExists();
     }
 
     // Pretty print info of lab
@@ -71,7 +73,8 @@ public class Lab {
             studentsInside.add(id);
             occupiedCabins.add(cabinPos);
             availableCabins.remove(Integer.valueOf(cabinPos));
-        }
+        } // the else condition (OutOfCabins) is checked by method Lab.studentArrivesOrLeaves()
+        LogManager.checkInUser(cabins.get(cabinPos-1).getStudent(), cabinPos);
     }
 
     // Method for Student entry which calls the studentLeaves from Cabin.java class
@@ -80,6 +83,7 @@ public class Lab {
             Cabin tempCabin = cabins.get(i);
             if (tempCabin.getOccupancy()) {
                 if (tempCabin.getStudent().getID().equalsIgnoreCase(id)) {
+                    LogManager.checkOutUser(cabins.get(i).getStudent(), i+1);
                     cabins.get(i).studentLeaves();
                     studentsInside.remove(id);
                     availableCabins.add(i+1);

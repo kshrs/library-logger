@@ -35,14 +35,12 @@ public class Cabin {
 
     // Method for Student entry
     public void studentArrives(String name, String id) {
-        System.out.println("\n--> Student [" + name + "] Arrives at cabin " + cabinPos + "\n");
         student = new Student(name, id);
         toggleOccupancy();
     }
 
     // Method for Student exit
     public void studentLeaves() {
-        System.out.println("\n<--Student [" + student.getName() + "] Leaves cabin " + cabinPos + "\n");
         student = null;
         toggleOccupancy();
     }

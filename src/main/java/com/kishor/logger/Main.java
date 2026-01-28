@@ -74,9 +74,9 @@ public class Main extends Application {
             cabinGrid.setPadding(new Insets(10, 10, 10, 10));
 
             // Cabin Grid Button Styles
-            String defaultStyle = "-fx-background-color: #0dac50; -fx-border-color: #363636; -fx-border-radius: 10px;";
-            String selectStyle = "-fx-background-color: #ffffc5; -fx-border-color: #363636";
-            String occupiedStyle = "-fx-background-color: #ff2c2c; -fx-border-color: #363636; -fx-border-radius: 10px;";
+            String defaultStyle = "-fx-background-color: #0dac50; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
+            String selectStyle = "-fx-background-color: #ffffc5; -fx-border-color: #363636; -fx_border-width: 15px;";
+            String occupiedStyle = "-fx-background-color: #ff2c2c; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
 
             int row, col;
             row = col = 0;

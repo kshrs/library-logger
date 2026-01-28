@@ -1,0 +1,4 @@
+# Empty db folder for storing db files
+# Ignore every file in this folder other than the .gitignore
+*
+!.gitignore
