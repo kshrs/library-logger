@@ -4,22 +4,31 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.stage.Stage;
+
+import javafx.scene.input.KeyCode;
 
 // Main class
 public class Main extends Application {
 
     // Number of Cabins in the lab
-    private static int cabinCount = 10;
+    private static int cabinCount = 28;
 
-    // Main event loop for the library app
+    // ArrayList to hold the cabin buttons to display in the GUI
+    private ArrayList<Button> cabinGridButtons = new ArrayList<Button>();
+
+
+    // Main event loop for the library app --cli version
     private static void mainLoop(Lab lab, Scanner scanner) {
         String name;
         String id;
@@ -51,101 +60,157 @@ public class Main extends Application {
         }
     }
 
+    // All of the main window content
+    private BorderPane createMainWindowContent(Lab lab) {
+
+        // NOTE: This variable is used only to show hints to the user
+        Label hint = new Label("");
+
+        Label title = new Label("library logger");
+        title.setStyle("-fx-font-style: bold; -fx-font-size: 20px; -fx-border-width: 0 0 2px 0; -fx-border-style: solid; -fx-border-color: black;");
+
+        /* Input Form | Left Pane */
+        GridPane inputForm = new GridPane(10, 10);
+        Label nameLabelField = new Label("");
+        TextField idTextField = new TextField();
+        idTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                hint.setText("Choose a cabin to make a log entry or exit");
+            } else {
+                hint.setText("");
+            }
+        });
+
+        Label checkIn = new Label("IN");
+        Label checkOut = new Label("OUT");
+        inputForm.add(new Label("Enter ID: "), 0, 0);
+        inputForm.add(idTextField, 1, 0);
+        inputForm.add(new Label("Name: "), 0, 1);
+        inputForm.add(nameLabelField, 1, 1);
+        inputForm.add(new Label("Action Status: "), 0, 2);
+        inputForm.add(checkIn, 0, 3);
+        inputForm.add(checkOut, 1, 3);
+
+        GridPane cabinGrid = new GridPane(10, 10);
+        cabinGrid.setPadding(new Insets(10, 10, 10, 10));
+
+        String activeStatus = "-fx-background-color: #ff2c2c; -fx-border: none; -fx-padding: 10px;";
+        String inactiveStatus = "-fx-background-color: #ffffff; -fx-border: none; -fx-padding: 10px;";
+
+        // Default check in-out status to be inactive
+        checkIn.setStyle(inactiveStatus);
+        checkOut.setStyle(inactiveStatus);
+        // Cabin Grid Button Styles
+        String defaultStyle = "-fx-background-color: #0dac50; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
+        String selectStyle = "-fx-background-color: #ffffc5; -fx-border-color: #363636; -fx_border-width: 15px;";
+        String occupiedStyle = "-fx-background-color: #ff2c2c; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
+
+        int row, col;
+        row = col = 0;
+        int columns = 4;
+        for (int i=0; i<cabinCount; ++i) {
+            int cabinID = i + 1;
+            Button btn = new Button("Cabin: " + cabinID);
+            btn.setPrefSize(100, 60);
+            btn.setStyle(defaultStyle);
+
+            col = i % columns; // cols = 0, 1, 2, 3, 4 if columns = 5
+            row = i / columns; // rows = 0, 0, 0, 0, 0 then 1,1,... to 5,5,... if columns = 5
+            cabinGrid.add(btn, col, row);
+
+            // Add the button to the cabinGridButtons arraylist to modify the colors on click
+            // NOTE: Used only inside the Button.setOnAction() method
+            cabinGridButtons.add(btn);
+        }
+
+        for (Button btn : cabinGridButtons) {
+            int cabinID = cabinGridButtons.indexOf(btn) + 1;
+            btn.setOnAction(event -> {
+                // Set default color for all the buttons which are not occupied and selected
+                // NOTE: Selection color is painted on top of this default color
+                for (Button b : cabinGridButtons) {
+                    b.setStyle(defaultStyle);
+                }
+                btn.setStyle(selectStyle);
+
+                if (!idTextField.getText().trim().equals("")) {
+                    String name = LogManager.getStudentNameByID(idTextField.getText());
+                    nameLabelField.setText(name.toUpperCase());
+
+                    // actionStatus will be "IN" or "OUT"
+                    String actionStatus = lab.studentArrivesOrLeaves(name, idTextField.getText(), cabinID);
+                    if (actionStatus.equals("IN")) {
+                        checkOut.setStyle(inactiveStatus);
+                        checkIn.setStyle(activeStatus);
+                    } else {
+                        checkOut.setStyle(activeStatus);
+                        checkIn.setStyle(inactiveStatus);
+                    }
+
+                    idTextField.setText("");
+                    hint.setText("");
+                } else {
+                    hint.setText("Do put an ID First before choosing the cabin!");
+                    System.out.println("Null ID! Retry.....");
+                }
+
+                // Color green on selected cabins after each entry
+                for (Integer j : lab.getOccupiedCabins()) {
+                    if (cabinID-1 != j) {
+                        cabinGridButtons.get(j-1).setStyle(occupiedStyle);
+                    }
+                }
+            });
+        }
+
+        BorderPane mainContent = new BorderPane();
+        mainContent.setPadding(new Insets(10, 10, 10, 10));
+        mainContent.setTop(new StackPane(title));
+        mainContent.setLeft(inputForm);
+        mainContent.setRight(cabinGrid);
+        mainContent.setBottom(new StackPane(hint));
+
+        return mainContent;
+
+    }
+
     // NOTE: This is testing version where the gui starts up
-    // JavaFX Testing
-    private ArrayList<Button> cabinGridButtons = new ArrayList<Button>();
-    private static final int COLUMNS = 5;
+    // JavaFX Beta Testing
     @Override
         public void start(Stage stage) {
             Lab lab = new Lab(cabinCount);
 
-            Label title = new Label("library logger");
-
-            /* Input Form */
-            GridPane inputForm = new GridPane(10, 10);
-            TextField nameTextField = new TextField();
-            TextField idTextField = new TextField();
-            inputForm.add(new Label("Enter Name: "),0,0);
-            inputForm.add(nameTextField,1,0);
-            inputForm.add(new Label("Enter ID: "),0,1);
-            inputForm.add(idTextField,1,1);
-
-            GridPane cabinGrid = new GridPane(10, 10);
-            cabinGrid.setPadding(new Insets(10, 10, 10, 10));
-
-            // Cabin Grid Button Styles
-            String defaultStyle = "-fx-background-color: #0dac50; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
-            String selectStyle = "-fx-background-color: #ffffc5; -fx-border-color: #363636; -fx_border-width: 15px;";
-            String occupiedStyle = "-fx-background-color: #ff2c2c; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
-
-            int row, col;
-            row = col = 0;
-            for (int i=0; i<cabinCount; ++i) {
-                int cabinID = i + 1;
-                Button btn = new Button("Cabin: " + cabinID);
-                btn.setPrefSize(100, 60);
-                btn.setStyle(defaultStyle);
-
-                col = i % COLUMNS; // cols = 0, 1, 2, 3, 4 if COLUMNS = 5
-                row = i / COLUMNS; // rows = 0, 0, 0, 0, 0 then 1,1,... to 5,5,... if COLUMNS = 5
-                cabinGrid.add(btn, col, row);
-
-                btn.setOnAction(event -> {
-                    // Set default color for all the buttons which are not occupied and selected
-                    // NOTE: Selection color is painted on top of this default color
-                    for (Button b : cabinGridButtons) {
-                        b.setStyle(defaultStyle);
-                    }
-                    btn.setStyle(selectStyle);
-
-                    if (!idTextField.getText().trim().equals("")) {
-                        lab.studentArrivesOrLeaves(nameTextField.getText(), idTextField.getText(), cabinID);
-                        nameTextField.setText("");
-                        idTextField.setText("");
-                    } else {
-                        System.out.println("Null ID! Retry.....");
-                    }
-
-                    // Color green on selected cabins after each entry
-                    for (Integer j : lab.getOccupiedCabins()) {
-                        cabinGridButtons.get(j-1).setStyle(occupiedStyle);
-                    }
-                });
-
-                // Color green on selected cabins on startup
-                for (Integer j : lab.getOccupiedCabins()) {
-                    cabinGridButtons.get(j-1).setStyle(occupiedStyle);
-                }
-
-                // Add the button to the cabinGridButtons arraylist to modify the colors on click
-                // NOTE: Used only inside the Button.setOnAction() method
-                cabinGridButtons.add(btn);
-            }
-
-            BorderPane primaryPane = new BorderPane();
-            primaryPane.setPadding(new Insets(10, 10, 10, 10));
-            primaryPane.setTop(new StackPane(title));
-            primaryPane.setLeft(inputForm);
-            primaryPane.setRight(cabinGrid);
-
+            BorderPane primaryPane = createMainWindowContent(lab);
             Scene scene = new Scene(primaryPane, 840, 480);
 
+            scene.setOnKeyPressed(event -> {
+                // Press Shift+F when no text field is selected to toggle full screen
+                if ((event.getCode() == KeyCode.F) && (event.isControlDown() == true)) {
+                    if (stage.isFullScreen()) {
+                        stage.setFullScreen(false);
+                    } else {
+                        stage.setFullScreen(true);
+                    }
+                }
+
+            });
 
             stage.setScene(scene);
-            stage.setTitle("JavaFX example");
+            stage.setTitle("JavaFX - Library Logger Version");
             stage.show();
         }
 
 
 
     public static void main(String[] args) {
-        if (args.length > 0 && args[0].equals("--gui")) {
-            launch();
-        } else {
+        if (args.length > 0 && args[0].equals("--cli")) {
             Scanner sc = new Scanner(System.in);
             Lab lab = new Lab(cabinCount);
             mainLoop(lab, sc);
             sc.close();
+        } else {
+            // Launch the javafx Application.launch() method which fires up Application.start() method defined by the user
+            launch();
         }
     }
 }

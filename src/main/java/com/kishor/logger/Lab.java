@@ -120,15 +120,18 @@ public class Lab {
         }
     }
     // Overloaded function for the gui version
-    public void studentArrivesOrLeaves(String name, String id, int cabinID) {
+    public String studentArrivesOrLeaves(String name, String id, int cabinID) {
         if (isStudentInside(id)) {
             studentLeaves(name, id);
+            return "OUT";
         } else {
             if (!(isCabinOccupied(cabinID))) {
                     studentArrives(name, id, cabinID);
+                    return "IN";
             } else {
                 System.out.println("Cabin is already occupied. Try Again");
             }
         }
+        return null;
     }
 }

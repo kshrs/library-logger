@@ -2,3 +2,4 @@
 # Ignore every file in this folder other than the .gitignore
 *
 !.gitignore
+!student_records.csv
