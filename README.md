@@ -2,7 +2,7 @@
 
 **Version:** v0.0.11 (GUI Beta)
 
-![GUI Demo](./assets/gui_demo.png)
+![GUI Demo](./assets/gui_demo.png?v0.0.11)
 
 ### App Definition
 **Library Lab Logger** is a digital tracking engine designed to manage student check-ins, check-outs, and real-time cabin availability in computer labs. It replaces manual ledgers with an interactive visual dashboard and automatic data logging.
