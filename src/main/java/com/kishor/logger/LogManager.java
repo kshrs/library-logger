@@ -76,7 +76,8 @@ public final class LogManager {
                }
            }
        } catch(IOException e) {
-           e.printStackTrace();
+           System.out.println("ID is not present");
+           // e.printStackTrace();
        }
        return null; // Return null if no match
    }

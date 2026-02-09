@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
 
@@ -72,7 +73,6 @@ public class Main extends Application {
     // All of the main window content
     private BorderPane createMainWindowContent(Lab lab) {
 
-
         TableView<Student> table = new TableView<>();
         table.setItems(Lab.studentList);
 
@@ -89,15 +89,20 @@ public class Main extends Application {
 
         table.getColumns().addAll(nameCol, idCol, cabinIDCol, checkStatusCol, checkTimeCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setEditable(false);
+        table.setPrefHeight(200);
+        table.setMaxHeight(200);
 
         // NOTE: This variable is used only to show hints to the user
         Label hint = new Label();
         hint.setWrapText(true);
+        hint.getStyleClass().add("hint-label"); // CSS
 
-        Label title = new Label("library logger");
-        title.setStyle("-fx-font-style: bold; -fx-font-size: 20px; -fx-border-width: 0 0 2px 0; -fx-border-style: solid; -fx-border-color: black;");
+        Label title = new Label("Library Logger");
+        title.getStyleClass().add("label-title"); // CSS
 
         Label timeField = new Label();
+        timeField.getStyleClass().add("time-label"); // CSS
 
         // Time
         Timeline timeline = new Timeline(
@@ -111,8 +116,12 @@ public class Main extends Application {
 
         /* Input Form | Left Pane */
         GridPane inputForm = new GridPane(10, 10);
+        inputForm.getStyleClass().add("sidebar"); // CSS
+
         Label nameLabelField = new Label("");
         TextField idTextField = new TextField();
+        idTextField.getStyleClass().add("text-field"); // CSS
+
         idTextField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 hint.setText("Choose a cabin to make a log entry or exit");
@@ -122,7 +131,11 @@ public class Main extends Application {
         });
 
         Label checkIn = new Label("IN");
+        checkIn.getStyleClass().add("status-box"); // CSS Base class
+
         Label checkOut = new Label("OUT");
+        checkOut.getStyleClass().add("status-box"); // CSS Base class
+
         inputForm.add(new Label("Enter ID: "), 0, 0);
         inputForm.add(idTextField, 1, 0);
         inputForm.add(new Label("Name: "), 0, 1);
@@ -134,17 +147,10 @@ public class Main extends Application {
 
         GridPane cabinGrid = new GridPane(10, 10);
         cabinGrid.setPadding(new Insets(10, 10, 10, 10));
+        cabinGrid.getStyleClass().add("cabin-grid"); // CSS
 
-        String activeStatus = "-fx-background-color: #ff2c2c; -fx-border: none; -fx-padding: 10px;";
-        String inactiveStatus = "-fx-background-color: #ffffff; -fx-border: none; -fx-padding: 10px;";
-
-        // Default check in-out status to be inactive
-        checkIn.setStyle(inactiveStatus);
-        checkOut.setStyle(inactiveStatus);
-        // Cabin Grid Button Styles
-        String defaultStyle = "-fx-background-color: #0dac50; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
-        String selectStyle = "-fx-background-color: #ffffc5; -fx-border-color: #363636; -fx_border-width: 15px;";
-        String occupiedStyle = "-fx-background-color: #ff2c2c; -fx-border-color: #363636; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx_border-width: 15px;";
+        // REMOVED: String activeStatus, inactiveStatus, defaultStyle...
+        // We now rely on CSS classes defined in style.css
 
         int row, col;
         row = col = 0;
@@ -152,59 +158,71 @@ public class Main extends Application {
         for (int i=0; i<cabinCount; ++i) {
             int cabinID = i + 1;
             Button btn = new Button("Cabin: " + cabinID);
-            btn.setPrefSize(100, 60);
-            btn.setStyle(defaultStyle);
+            btn.setPrefSize(150, 80);
 
-            col = i % columns; // cols = 0, 1, 2, 3, 4 if columns = 5
-            row = i / columns; // rows = 0, 0, 0, 0, 0 then 1,1,... to 5,5,... if columns = 5
+            // Set Base Styles
+            btn.getStyleClass().addAll("cabin-btn", "cabin-free");
+
+            col = i % columns;
+            row = i / columns;
             cabinGrid.add(btn, col, row);
 
-            // Add the button to the cabinGridButtons arraylist to modify the colors on click
-            // NOTE: Used only inside the Button.setOnAction() method
+            // Add the button to the cabinGridButtons arraylist
             cabinGridButtons.add(btn);
         }
 
         for (Button btn : cabinGridButtons) {
             int cabinID = cabinGridButtons.indexOf(btn) + 1;
 
-
             btn.setOnAction(event -> {
-                // Set default color for all the buttons which are not occupied and selected
-                // NOTE: Selection color is painted on top of this default color
+                // RESET LOOP: Set all buttons to default (Free)
                 for (Button b : cabinGridButtons) {
-                    b.setStyle(defaultStyle);
+                    b.getStyleClass().removeAll("cabin-selected", "cabin-occupied");
+                    if (!b.getStyleClass().contains("cabin-free")) {
+                        b.getStyleClass().add("cabin-free");
+                    }
                 }
 
+                // Apply SELECTED style to current button
+                btn.getStyleClass().remove("cabin-free");
+                btn.getStyleClass().add("cabin-selected");
 
-                btn.setStyle(selectStyle);
-
-                // If the cabin already occupied color it RED and leave the loop for *entry*
+                // OCCUPIED CHECK: If this cabin is actually occupied
                 for (Integer j : lab.getOccupiedCabins()) {
                     if (cabinID == j) {
-                        // Color all the occupied cabins RED
+                        // Re-color all occupied cabins
                         for (Integer k : lab.getOccupiedCabins()) {
-                            cabinGridButtons.get(k-1).setStyle(occupiedStyle);
+                            Button occupiedBtn = cabinGridButtons.get(k-1);
+                            occupiedBtn.getStyleClass().removeAll("cabin-free", "cabin-selected");
+                            if (!occupiedBtn.getStyleClass().contains("cabin-occupied")) {
+                                occupiedBtn.getStyleClass().add("cabin-occupied");
+                            }
                         }
                         hint.setText("Cabin already occupied! Try choosing any other cabin");
-                        System.out.println("Cabin already occupied! Try choosing any other cabin");
+                        System.out.println("Cabin already occupied!");
                         return;
                     }
                 }
 
-
                 if (!idTextField.getText().trim().equals("")) {
-
                     String name = LogManager.getStudentNameByID(idTextField.getText());
-                    nameLabelField.setText(name.toUpperCase());
-
-                    // actionStatus will be "IN" or "OUT"
-                    String actionStatus = lab.studentArrivesOrLeaves(name, idTextField.getText(), cabinID);
-                    if (actionStatus.equals("IN")) {
-                        checkOut.setStyle(inactiveStatus);
-                        checkIn.setStyle(activeStatus);
+                    if (name == null) {
+                       hint.setText("Cannot find ID-Name pair in db...");
+                       return;
                     } else {
-                        checkOut.setStyle(activeStatus);
-                        checkIn.setStyle(inactiveStatus);
+                        nameLabelField.setText(name.toUpperCase());
+                    }
+
+                    String actionStatus = lab.studentArrivesOrLeaves(name, idTextField.getText(), cabinID);
+
+                    // TOGGLE STATUS LABELS (IN/OUT)
+                    checkIn.getStyleClass().remove("status-active");
+                    checkOut.getStyleClass().remove("status-active");
+
+                    if (actionStatus.equals("IN")) {
+                        checkIn.getStyleClass().add("status-active");
+                    } else {
+                        checkOut.getStyleClass().add("status-active");
                     }
 
                     idTextField.setText("");
@@ -214,9 +232,13 @@ public class Main extends Application {
                     System.out.println("Null ID! Retry.....");
                 }
 
-                // Color all the occupied cabins RED
+                // FINAL RE-COLOR: Ensure all occupied cabins stay Red
                 for (Integer j : lab.getOccupiedCabins()) {
-                    cabinGridButtons.get(j-1).setStyle(occupiedStyle);
+                    Button occupiedBtn = cabinGridButtons.get(j-1);
+                    occupiedBtn.getStyleClass().removeAll("cabin-free", "cabin-selected");
+                    if (!occupiedBtn.getStyleClass().contains("cabin-occupied")) {
+                        occupiedBtn.getStyleClass().add("cabin-occupied");
+                    }
                 }
             });
         }
@@ -225,12 +247,13 @@ public class Main extends Application {
         mainContent.setPadding(new Insets(10, 10, 10, 10));
         mainContent.setTop(new StackPane(title));
         mainContent.setLeft(inputForm);
-        mainContent.setRight(cabinGrid);
-        mainContent.setCenter(new StackPane(hint));
+        // mainContent.setRight(cabinGrid);
+        // mainContent.setCenter(new StackPane(hint));
+        mainContent.setCenter(cabinGrid);
+        mainContent.setRight(new StackPane(hint));
         mainContent.setBottom(table);
 
         return mainContent;
-
     }
 
     // NOTE: This is testing version where the gui starts up
@@ -240,7 +263,9 @@ public class Main extends Application {
             Lab lab = new Lab(cabinCount);
 
             BorderPane primaryPane = createMainWindowContent(lab);
-            Scene scene = new Scene(primaryPane, 840, 480);
+            Scene scene = new Scene(primaryPane, 1080, 720);
+            String css = this.getClass().getResource("style.css").toExternalForm();
+            scene.getStylesheets().add(css);
 
             scene.setOnKeyPressed(event -> {
                 // Press Shift+F when no text field is selected to toggle full screen
@@ -255,7 +280,7 @@ public class Main extends Application {
             });
 
             stage.setScene(scene);
-            stage.setTitle("JavaFX - Library Logger Version");
+            stage.setTitle("JavaFX - Library Logger");
             stage.show();
         }
 

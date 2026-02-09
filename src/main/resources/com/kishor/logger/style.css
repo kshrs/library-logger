@@ -1,0 +1,78 @@
+/* General App Settings */
+.root {
+    -fx-background-color: #f4f4f4;
+    -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+/* 1. Typography */
+.label-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 10px;
+    -fx-border-color: black;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.hint-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.time-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7f8c8d;
+}
+
+/* 2. Sidebar / Form */
+.sidebar {
+    -fx-padding: 20px;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.status-box {
+    -fx-padding: 10px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5px;
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+}
+
+.status-active {
+    -fx-background-color: #ff2c2c;
+    -fx-text-fill: white;
+    -fx-border-color: #b00000;
+}
+
+/* 3. Cabin Grid Buttons */
+.cabin-grid {
+    -fx-alignment: center;
+}
+
+.cabin-btn {
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #363636;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.cabin-free {
+    -fx-background-color: #0dac50; /* Green */
+}
+
+.cabin-occupied {
+    -fx-background-color: #ff2c2c; /* Red */
+}
+
+.cabin-selected {
+    -fx-background-color: #ffffc5; /* Yellow */
+    -fx-text-fill: black;
+    -fx-border-color: #f39c12;
+    -fx-border-width: 2px;
+}
