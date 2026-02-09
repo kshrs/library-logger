@@ -4,19 +4,27 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.stage.Stage;
 
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 import javafx.scene.input.KeyCode;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+import javafx.animation.Animation;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
 
 // Main class
 public class Main extends Application {
@@ -27,6 +35,7 @@ public class Main extends Application {
     // ArrayList to hold the cabin buttons to display in the GUI
     private ArrayList<Button> cabinGridButtons = new ArrayList<Button>();
 
+    private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // Pattern 23:54:01
 
     // Main event loop for the library app --cli version
     private static void mainLoop(Lab lab, Scanner scanner) {
@@ -63,11 +72,42 @@ public class Main extends Application {
     // All of the main window content
     private BorderPane createMainWindowContent(Lab lab) {
 
+
+        TableView<Student> table = new TableView<>();
+        table.setItems(Lab.studentList);
+
+        TableColumn<Student, String> nameCol = new TableColumn<>("Name");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        TableColumn<Student, String> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Student, Integer> cabinIDCol = new TableColumn<>("Cabin ID");
+        cabinIDCol.setCellValueFactory(new PropertyValueFactory<>("cabinID"));
+        TableColumn<Student, String> checkStatusCol = new TableColumn<>("Check IN/OUT Status");
+        checkStatusCol.setCellValueFactory(new PropertyValueFactory<>("checkStatus"));
+        TableColumn<Student, String> checkTimeCol = new TableColumn<>("Check IN/OUT Time");
+        checkTimeCol.setCellValueFactory(new PropertyValueFactory<>("checkTime"));
+
+        table.getColumns().addAll(nameCol, idCol, cabinIDCol, checkStatusCol, checkTimeCol);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         // NOTE: This variable is used only to show hints to the user
-        Label hint = new Label("");
+        Label hint = new Label();
+        hint.setWrapText(true);
 
         Label title = new Label("library logger");
         title.setStyle("-fx-font-style: bold; -fx-font-size: 20px; -fx-border-width: 0 0 2px 0; -fx-border-style: solid; -fx-border-color: black;");
+
+        Label timeField = new Label();
+
+        // Time
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(1), event -> {
+                timeField.setText(LocalTime.now().format(timeFormatter).toString());
+            })
+        );
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
 
         /* Input Form | Left Pane */
         GridPane inputForm = new GridPane(10, 10);
@@ -89,7 +129,8 @@ public class Main extends Application {
         inputForm.add(nameLabelField, 1, 1);
         inputForm.add(new Label("Action Status: "), 0, 2);
         inputForm.add(checkIn, 0, 3);
-        inputForm.add(checkOut, 1, 3);
+        inputForm.add(new StackPane(timeField), 1, 3);
+        inputForm.add(checkOut, 2, 3);
 
         GridPane cabinGrid = new GridPane(10, 10);
         cabinGrid.setPadding(new Insets(10, 10, 10, 10));
@@ -125,15 +166,34 @@ public class Main extends Application {
 
         for (Button btn : cabinGridButtons) {
             int cabinID = cabinGridButtons.indexOf(btn) + 1;
+
+
             btn.setOnAction(event -> {
                 // Set default color for all the buttons which are not occupied and selected
                 // NOTE: Selection color is painted on top of this default color
                 for (Button b : cabinGridButtons) {
                     b.setStyle(defaultStyle);
                 }
+
+
                 btn.setStyle(selectStyle);
 
+                // If the cabin already occupied color it RED and leave the loop for *entry*
+                for (Integer j : lab.getOccupiedCabins()) {
+                    if (cabinID == j) {
+                        // Color all the occupied cabins RED
+                        for (Integer k : lab.getOccupiedCabins()) {
+                            cabinGridButtons.get(k-1).setStyle(occupiedStyle);
+                        }
+                        hint.setText("Cabin already occupied! Try choosing any other cabin");
+                        System.out.println("Cabin already occupied! Try choosing any other cabin");
+                        return;
+                    }
+                }
+
+
                 if (!idTextField.getText().trim().equals("")) {
+
                     String name = LogManager.getStudentNameByID(idTextField.getText());
                     nameLabelField.setText(name.toUpperCase());
 
@@ -154,11 +214,9 @@ public class Main extends Application {
                     System.out.println("Null ID! Retry.....");
                 }
 
-                // Color green on selected cabins after each entry
+                // Color all the occupied cabins RED
                 for (Integer j : lab.getOccupiedCabins()) {
-                    if (cabinID-1 != j) {
-                        cabinGridButtons.get(j-1).setStyle(occupiedStyle);
-                    }
+                    cabinGridButtons.get(j-1).setStyle(occupiedStyle);
                 }
             });
         }
@@ -168,7 +226,8 @@ public class Main extends Application {
         mainContent.setTop(new StackPane(title));
         mainContent.setLeft(inputForm);
         mainContent.setRight(cabinGrid);
-        mainContent.setBottom(new StackPane(hint));
+        mainContent.setCenter(new StackPane(hint));
+        mainContent.setBottom(table);
 
         return mainContent;
 

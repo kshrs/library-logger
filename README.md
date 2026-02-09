@@ -1,6 +1,6 @@
 # Library Lab Logger
 
-**Version:** v0.0.11 (GUI Beta)
+**Version:** v0.0.12 (GUI Beta)
 
 ![GUI Demo](./assets/gui_demo.png?v0.0.11)
 
@@ -12,7 +12,6 @@
 ### Key Features
 * **Visual Dashboard:** Interactive grid showing real-time occupancy (Green = Empty, Red = Occupied).
 * **Data Persistence:** Automatic daily CSV logging (`db/YYYY-MM-DD.csv`) for auditing.
-* **Dual Mode:** Defaults to a GUI but supports a lightweight CLI for low-resource environments.
 
 ### Project Structure
 * `Main.java`: Entry point handling the GUI lifecycle and CLI fallback.
@@ -35,14 +34,9 @@
     mvn clean compile
     ```
 
-3.  **Run Application (GUI Default):**
+3.  **Run Application:**
     ```bash
-    mvn exec:java -Dexec.mainClass="com.kishor.logger.Main"
-    ```
-
-    *(Optional) Run in CLI Mode:*
-    ```bash
-    mvn exec:java -Dexec.mainClass="com.kishor.logger.Main" -Dexec.args="--cli"
+    mvn clean javafx:run
     ```
 
 ---

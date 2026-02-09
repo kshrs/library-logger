@@ -35,7 +35,7 @@ public class Cabin {
 
     // Method for Student entry
     public void studentArrives(String name, String id) {
-        student = new Student(name, id);
+        student = new Student(name, id, cabinPos, "IN");
         toggleOccupancy();
     }
 
